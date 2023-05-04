@@ -10,19 +10,19 @@
 # There are some restrictions on what makes a valid project name
 # specification here:
 # https://packaging.python.org/specifications/core-metadata/#name
-name = "sampleproject"  # Required
+name = "thonny-autosave"  # Required
 
 # Versions should comply with PEP 440:
 # https://www.python.org/dev/peps/pep-0440/
 #
 # For a discussion on single-sourcing the version, see
 # https://packaging.python.org/guides/single-sourcing-package-version/
-version = "3.0.0"  # Required
+version = "0.0.11"  # Required
 
 # This is a one-line description or tagline of what your project does. This
 # corresponds to the "Summary" metadata field:
 # https://packaging.python.org/specifications/core-metadata/#summary
-description = "A sample Python project"  # Optional
+description = "Adds a checkbox to the File menu of Thonny editor, when activated , Automatically saves current file every 10 seconds"  # Optional
 
 # This is an optional longer description of your project that represents
 # the body of text which users will see when they visit PyPI.
@@ -57,14 +57,14 @@ keywords = ["sample", "setuptools", "development"]  # Optional
 # authored the project, and a valid email address corresponding to the name
 # listed.
 authors = [
-  {name = "A. Random Developer", email = "author@example.com" } # Optional
+  {name = "Selmen Arous", email = "selmen.arous@gmail.com" } # Optional
 ]
 
 # This should be your name or the names of the organization who currently
 # maintains the project, and a valid email address corresponding to the name
 # listed.
 maintainers = [
-  {name = "A. Great Maintainer", email = "maintainer@example.com" } # Optional
+  {name = "Selmen Arous", email = "selmen.arous@gmail.com" } # Optional
 ]
 
 # Classifiers help users find your project by categorizing it.
@@ -103,7 +103,7 @@ classifiers = [  # Optional
 # For an analysis of this field vs pip's requirements files see:
 # https://packaging.python.org/discussions/install-requires-vs-requirements/
 dependencies = [ # Optional
-  "peppercorn"
+  "thonny"
 ]
 
 # List additional groups of dependencies here (e.g. development
@@ -114,9 +114,9 @@ dependencies = [ # Optional
 #
 # Similar to `dependencies` above, these must be valid existing
 # projects.
-[project.optional-dependencies] # Optional
-dev = ["check-manifest"]
-test = ["coverage"]
+#[project.optional-dependencies] # Optional
+#dev = ["check-manifest"]
+#test = ["coverage"]
 
 # List URLs that are relevant to your project
 #
@@ -129,11 +129,11 @@ test = ["coverage"]
 # maintainers, and where to support the project financially. The key is
 # what's used to render the link text on PyPI.
 [project.urls]  # Optional
-"Homepage" = "https://github.com/pypa/sampleproject"
-"Bug Reports" = "https://github.com/pypa/sampleproject/issues"
-"Funding" = "https://donate.pypi.org"
-"Say Thanks!" = "http://saythanks.io/to/example"
-"Source" = "https://github.com/pypa/sampleproject/"
+"Homepage" = "https://github.com/selmen2004/thonny-autosave"
+"Bug Reports" = "https://github.com/selmen2004/thonny-autosave/issues"
+"Funding" = "https://selmen.tn"
+"Say Thanks!" = "https://selmen.tn"
+"Source" = "https://github.com/selmen2004/thonny-autosave"
 
 # The following would provide a command line executable called `sample`
 # which executes the function `main` from this package when invoked.
@@ -145,7 +145,7 @@ sample = "sample:main"
 [tool.setuptools]
 # If there are data files included in your packages that need to be
 # installed, specify them here.
-package-data = {"sample" = ["*.dat"]}
+#package-data = {"sample" = ["*.dat"]}
 
 [build-system]
 # These are the assumed default build requirements from pip:
