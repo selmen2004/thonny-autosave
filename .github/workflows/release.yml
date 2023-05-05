@@ -26,6 +26,6 @@ jobs:
     - name: Build
       run: python -m build .
     - name: Publish
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        skip_existing: true
+            
+      uses: pypa/gh-action-pypi-publish@release/v1
+     
