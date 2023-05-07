@@ -17,8 +17,8 @@ name = "thonny-autosave"  # Required
 #
 # For a discussion on single-sourcing the version, see
 # https://packaging.python.org/guides/single-sourcing-package-version/
-version = "0.0.15"  # Required
-
+version = "0.0.16"  # Required
+author = "Selmen Arous"
 # This is a one-line description or tagline of what your project does. This
 # corresponds to the "Summary" metadata field:
 # https://packaging.python.org/specifications/core-metadata/#summary
