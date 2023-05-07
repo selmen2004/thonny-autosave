@@ -17,8 +17,8 @@ name = "thonny-autosave"  # Required
 #
 # For a discussion on single-sourcing the version, see
 # https://packaging.python.org/guides/single-sourcing-package-version/
-version = "0.0.16"  # Required
-author = "Selmen Arous"
+version = "0.0.17"  # Required
+
 # This is a one-line description or tagline of what your project does. This
 # corresponds to the "Summary" metadata field:
 # https://packaging.python.org/specifications/core-metadata/#summary
@@ -64,7 +64,7 @@ authors = [
 # maintains the project, and a valid email address corresponding to the name
 # listed.
 maintainers = [
-  {name = "Selmen Arous", email = "selmen.arous@gmail.com" } # Optional
+#  {name = "Selmen Arous", email = "selmen.arous@gmail.com" } # Optional
 ]
 
 # Classifiers help users find your project by categorizing it.
@@ -142,16 +142,23 @@ sample = "sample:main"
 
 # This is configuration specific to the `setuptools` build backend.
 # If you are using a different build backend, you will need to change this.
-[tool.setuptools]
+#[tool.setuptools]
 # If there are data files included in your packages that need to be
 # installed, specify them here.
 #package-data = {"sample" = ["*.dat"]}
 
-[build-system]
+#[build-system]
 # These are the assumed default build requirements from pip:
 # https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-[tool.hatch.build.targets.wheel]
-packages = ["src/thonnycontrib"]
+
+#requires = ["hatchling"]
+#build-backend = "hatchling.build"
+#[tool.hatch.build.targets.wheel]
+#packages = ["src/thonnycontrib"]
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+[tool.setuptools]
+# ...
+package-dir = { thonnycontrib = "src/thonnycontrib" }
 
