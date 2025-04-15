@@ -5,7 +5,7 @@ from logging import getLogger
 
 get_workbench().set_default("general.autosave",True)
 logger = getLogger(__name__)
-logger.setLevel(logger.disabled)
+logger.setLevel(51)
 
 #logger.exception("dddddd")
 
