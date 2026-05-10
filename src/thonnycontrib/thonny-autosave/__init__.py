@@ -67,7 +67,12 @@ def save_current():
     logger.info("entering save_current")
     get_workbench().after(10000, save_current)
 
-    editor = get_workbench().get_editor_notebook().get_current_editor()
+    try:
+        editor_notebook = get_workbench().get_editor_notebook()
+    except (AssertionError, AttributeError):
+        return
+
+    editor = editor_notebook.get_current_editor()
     if editor is None:
         return
 
@@ -100,5 +105,4 @@ def load_plugin():
     get_workbench().bind("Save", _on_file_event, True)
     get_workbench().bind("SaveAs", _on_file_event, True)
     get_workbench().bind("Open", _on_file_event, True)
-    logger.info("running save_current")
-    save_current()
+    get_workbench().bind("WorkbenchReady", lambda event: save_current(), True)
