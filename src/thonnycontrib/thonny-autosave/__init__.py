@@ -17,6 +17,9 @@ _WARNING_MESSAGE = (
 _BLINK_PERIOD_MS = 700
 _should_show_untitled_title = True
 
+_UI_EXTENSION_WARNING = "En mode Bac, l'enregistrement des fichiers .ui est interdit."
+_original_save_file = None
+
 
 def toggle_autosave():
     get_workbench().set_option("general.autosave", not get_workbench().get_option("general.autosave"))
@@ -59,10 +62,61 @@ def _validate_bac_path(filename: str) -> bool:
     return False
 
 
+
+def _is_forbidden_extension(filename: str) -> bool:
+    return filename.lower().endswith(".ui")
+
+
+def _warn_forbidden_extension():
+    messagebox.showwarning("Mode Bac", _UI_EXTENSION_WARNING, master=get_workbench())
+
+
+def _is_save_allowed(filename: str) -> bool:
+    if not _is_bac_mode_enabled():
+        return True
+
+    if _is_forbidden_extension(filename):
+        _warn_forbidden_extension()
+        return False
+
+    return _validate_bac_path(filename)
+
+
+def _patch_editor_save_file():
+    global _original_save_file
+    if _original_save_file is not None:
+        return
+
+    try:
+        from thonny.editors import Editor
+    except Exception:
+        return
+
+    _original_save_file = Editor.save_file
+
+    def wrapped_save_file(self, *args, **kwargs):
+        target = kwargs.get("ask_filename")
+        if target is None and args:
+            target = args[0]
+
+        if isinstance(target, str) and _is_bac_mode_enabled() and _is_forbidden_extension(target):
+            _warn_forbidden_extension()
+            return None
+
+        result = _original_save_file(self, *args, **kwargs)
+
+        if _is_bac_mode_enabled() and result and _is_forbidden_extension(result):
+            _warn_forbidden_extension()
+            return None
+
+        return result
+
+    Editor.save_file = wrapped_save_file
+
 def _on_file_event(event):
     filename = getattr(event, "filename", "")
     if filename:
-        _validate_bac_path(filename)
+        _is_save_allowed(filename)
 
 
 def _get_current_editor():
@@ -106,11 +160,12 @@ def save_current():
         return
 
     if editor.is_modified() and get_workbench().get_option("general.autosave"):
-        if _validate_bac_path(filename):
+        if _is_save_allowed(filename):
             editor.save_file()
 
 
 def _on_workbench_ready(event):
+    _patch_editor_save_file()
     save_current()
     _blink_unsaved_untitled()
 
