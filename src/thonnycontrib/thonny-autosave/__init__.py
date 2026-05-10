@@ -41,6 +41,11 @@ def toggle_autosave():
     get_workbench().set_option("general.autosave", not get_workbench().get_option("general.autosave"))
 
 
+
+
+def _can_toggle_bac_mode() -> bool:
+    return not _is_bac_lock_period()
+
 def toggle_bac_mode():
     if _is_bac_lock_period():
         get_workbench().set_option("general.bac_mode", True)
@@ -162,9 +167,9 @@ def _blink_unsaved_untitled():
         return
 
     if _should_show_untitled_title:
-        editor_notebook.update_editor_title(editor, tr("<untitled>"))
+        editor_notebook.update_editor_title(editor, tr("<untitled>") + "*")
     else:
-        editor_notebook.update_editor_title(editor, " " * len(tr("<untitled>")))
+        editor_notebook.update_editor_title(editor, "<Enregistrez votre travail>")
 
     _should_show_untitled_title = not _should_show_untitled_title
 
@@ -209,6 +214,7 @@ def load_plugin():
         tr("Mode Bac"),
         flag_name="general.bac_mode",
         handler=toggle_bac_mode,
+        tester=_can_toggle_bac_mode,
     )
 
     get_workbench().bind("Save", _on_file_event, True)
