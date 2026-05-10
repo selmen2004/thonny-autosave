@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import date, datetime
 from logging import getLogger
 from tkinter import messagebox
 
@@ -21,12 +21,33 @@ _UI_EXTENSION_WARNING = "En mode Bac, l'enregistrement des fichiers .ui est inte
 _original_save_file = None
 _original_ask_new_path = None
 
+_BAC_LOCK_START = date(2026, 5, 19)
+_BAC_LOCK_END = date(2026, 5, 23)
+
+
+
+
+def _is_bac_lock_period() -> bool:
+    today = datetime.now().date()
+    return _BAC_LOCK_START <= today <= _BAC_LOCK_END
+
+
+def _enforce_bac_mode_and_logging_if_required():
+    if _is_bac_lock_period():
+        get_workbench().set_option("general.bac_mode", True)
+        get_workbench().set_option("general.event_logging", True)
 
 def toggle_autosave():
     get_workbench().set_option("general.autosave", not get_workbench().get_option("general.autosave"))
 
 
 def toggle_bac_mode():
+    if _is_bac_lock_period():
+        get_workbench().set_option("general.bac_mode", True)
+        get_workbench().set_option("general.event_logging", True)
+        messagebox.showwarning("Mode Bac", "Du 19 mai 2026 au 23 mai 2026, le Mode Bac ne peut pas être désactivé.", master=get_workbench())
+        return
+
     enabled = not get_workbench().get_option("general.bac_mode")
     get_workbench().set_option("general.bac_mode", enabled)
     get_workbench().set_option("general.event_logging", enabled)
@@ -165,12 +186,15 @@ def save_current():
 
 
 def _on_workbench_ready(event):
+    _enforce_bac_mode_and_logging_if_required()
     _patch_editor_save_file()
     save_current()
     _blink_unsaved_untitled()
 
 
 def load_plugin():
+    _enforce_bac_mode_and_logging_if_required()
+
     get_workbench().add_command(
         "toggle_autosave",
         "file",
