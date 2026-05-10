@@ -19,6 +19,7 @@ _should_show_untitled_title = True
 
 _UI_EXTENSION_WARNING = "En mode Bac, l'enregistrement des fichiers .ui est interdit."
 _original_save_file = None
+_original_ask_new_path = None
 
 
 def toggle_autosave():
@@ -83,7 +84,7 @@ def _is_save_allowed(filename: str) -> bool:
 
 
 def _patch_editor_save_file():
-    global _original_save_file
+    global _original_save_file, _original_ask_new_path
     if _original_save_file is not None:
         return
 
@@ -93,24 +94,23 @@ def _patch_editor_save_file():
         return
 
     _original_save_file = Editor.save_file
+    _original_ask_new_path = Editor.ask_new_path
+
+    def wrapped_ask_new_path(self, *args, **kwargs):
+        path = _original_ask_new_path(self, *args, **kwargs)
+        if path and _is_bac_mode_enabled() and _is_forbidden_extension(path):
+            _warn_forbidden_extension()
+            return None
+        return path
 
     def wrapped_save_file(self, *args, **kwargs):
-        target = kwargs.get("ask_filename")
-        if target is None and args:
-            target = args[0]
-
-        if isinstance(target, str) and _is_bac_mode_enabled() and _is_forbidden_extension(target):
+        if _is_bac_mode_enabled() and self._filename and _is_forbidden_extension(self._filename):
             _warn_forbidden_extension()
             return None
 
-        result = _original_save_file(self, *args, **kwargs)
+        return _original_save_file(self, *args, **kwargs)
 
-        if _is_bac_mode_enabled() and result and _is_forbidden_extension(result):
-            _warn_forbidden_extension()
-            return None
-
-        return result
-
+    Editor.ask_new_path = wrapped_ask_new_path
     Editor.save_file = wrapped_save_file
 
 def _on_file_event(event):
