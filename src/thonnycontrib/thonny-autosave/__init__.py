@@ -14,6 +14,8 @@ logger.setLevel(51)
 _WARNING_MESSAGE = (
     "Vous devez enregistrer dans C:/Bac{year}/xxxxxx où xxxxxx est votre numéro d'inscription"
 )
+_BLINK_PERIOD_MS = 700
+_should_show_untitled_title = True
 
 
 def toggle_autosave():
@@ -63,17 +65,40 @@ def _on_file_event(event):
         _validate_bac_path(filename)
 
 
-def save_current():
-    logger.info("entering save_current")
-    get_workbench().after(10000, save_current)
-
+def _get_current_editor():
     try:
         editor_notebook = get_workbench().get_editor_notebook()
     except (AssertionError, AttributeError):
+        return None, None
+
+    return editor_notebook, editor_notebook.get_current_editor()
+
+
+def _blink_unsaved_untitled():
+    global _should_show_untitled_title
+    get_workbench().after(_BLINK_PERIOD_MS, _blink_unsaved_untitled)
+
+    editor_notebook, editor = _get_current_editor()
+    if editor is None or editor_notebook is None:
         return
 
-    editor = editor_notebook.get_current_editor()
-    if editor is None:
+    if not _is_bac_mode_enabled() or editor.get_filename(False) is not None:
+        editor_notebook.update_editor_title(editor)
+        return
+
+    if _should_show_untitled_title:
+        editor_notebook.update_editor_title(editor, tr("<untitled>"))
+    else:
+        editor_notebook.update_editor_title(editor, " " * len(tr("<untitled>")))
+
+    _should_show_untitled_title = not _should_show_untitled_title
+
+
+def save_current():
+    get_workbench().after(10000, save_current)
+
+    editor_notebook, editor = _get_current_editor()
+    if editor is None or editor_notebook is None:
         return
 
     filename = editor.get_filename(False)
@@ -83,6 +108,11 @@ def save_current():
     if editor.is_modified() and get_workbench().get_option("general.autosave"):
         if _validate_bac_path(filename):
             editor.save_file()
+
+
+def _on_workbench_ready(event):
+    save_current()
+    _blink_unsaved_untitled()
 
 
 def load_plugin():
@@ -105,4 +135,4 @@ def load_plugin():
     get_workbench().bind("Save", _on_file_event, True)
     get_workbench().bind("SaveAs", _on_file_event, True)
     get_workbench().bind("Open", _on_file_event, True)
-    get_workbench().bind("WorkbenchReady", lambda event: save_current(), True)
+    get_workbench().bind("WorkbenchReady", _on_workbench_ready, True)
